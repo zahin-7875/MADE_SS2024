@@ -1,0 +1,46 @@
+valuetype GeoCoordinateType oftype text {
+    constraints: [GeoCoordinateRegex];
+}
+
+constraint GeoCoordinateRegex oftype RegexConstraint {
+    regex: /\d{1,3}\.\d+/;
+}
+
+valuetype StadtteilType oftype text {
+    constraints: [StadtteilRegex];
+}
+
+constraint StadtteilRegex oftype RegexConstraint {
+    regex: /^Furth-.*/;
+}
+
+pipeline TreePlantingPipeline {
+    block DataExtractor oftype HttpExtractor { url: "https://opendata.rhein-kreis-neuss.de/api/v2/catalog/datasets/stadt-neuss-herbstpflanzung-2023/exports/csv"; }
+    block TreePlantingTextFileInterpreter oftype TextFileInterpreter {}
+    block TreePlantingCSVInterpreter oftype CSVInterpreter { enclosing: '"'; delimiter: ","; }
+    
+    block DropColumn oftype ColumnDeleter {
+        delete: [column E];
+    }
+
+    block TreePlantingTableInterpreter oftype TableInterpreter {
+        header: true;
+        columns: [
+            "id" oftype text,
+            "stadtteil" oftype StadtteilType,
+            "geo-coordinate-1" oftype GeoCoordinateType,
+            "geo-coordinate-2" oftype GeoCoordinateType,
+            "baumart_botanisch" oftype text,
+            "pflanzjahr" oftype integer,
+        ];
+    }
+
+    block DatabaseLoader oftype SQLiteLoader { table: "trees"; file: "./trees.sqlite"; }
+
+    DataExtractor
+        -> TreePlantingTextFileInterpreter
+        -> TreePlantingCSVInterpreter
+        -> DropColumn
+        -> TreePlantingTableInterpreter
+        -> DatabaseLoader;
+}
