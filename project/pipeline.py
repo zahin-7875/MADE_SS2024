@@ -45,7 +45,7 @@ def main():
         "sea_ice": "nsidcorg/daily-sea-ice-extent-data"
     }
 
-    data_dir = "D:\Summer 2024\Methods of Advanced Data Engineering (MADE)\Exercise_main\MADE_SS2024\data"
+    data_dir = "D:\\Summer 2024\\Methods of Advanced Data Engineering (MADE)\\Exercise_main\\MADE_SS2024\\data"
     sqlite_db_path = os.path.join(data_dir, "climate_data.db")
 
     create_data_directory(data_dir)
