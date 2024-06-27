@@ -9,7 +9,9 @@
     // Set a constraint and a value type to validate the coordinates
     constraint CoordinatesRangeConstraint oftype RangeConstraint {
         lowerBound: -90;
+        lowerBoundInclusive: true;
         upperBound: 90;
+        upperBoundInclusive: true;
     }
 
     valuetype ValidCoordinate oftype decimal {
